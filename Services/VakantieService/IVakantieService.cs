@@ -9,6 +9,6 @@ namespace HRSystem.Services.VakantieService
         Task<ServiceResponse<List<GetVakantieDto>>> AddVakantie(AddVakantieDto newVakantie);
         Task<ServiceResponse<GetVakantieDto>> UpdateVakantie(UpdateVakantieDto updatedVakantie);
         Task<ServiceResponse<List<GetVakantieDto>>> DeleteVakantie(int id);
-        Task<ServiceResponse<GetVakantieDto>> updateGoedKeruing(UpdateVakantieDto updatedVakantie);
+        Task<ServiceResponse<GetVakantieDto>> updateGoedKeuring(UpdateVakantieDto updatedVakantie);
     }
 }

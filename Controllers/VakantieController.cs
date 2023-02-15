@@ -49,7 +49,7 @@ namespace HRSystem.Controllers
         [HttpPut("GoedKeuring")]
         public async Task<ActionResult<ServiceResponse<GetVakantieDto>>> UpdateGoedKeuring(UpdateVakantieDto updatedVakantie)
         {
-            var serviceResponse = await _vakantieService.updateGoedKeruing(updatedVakantie);
+            var serviceResponse = await _vakantieService.updateGoedKeuring(updatedVakantie);
             if(serviceResponse?.Data == null)
             {
                 return NotFound(serviceResponse);

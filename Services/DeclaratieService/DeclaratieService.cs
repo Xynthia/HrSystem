@@ -5,15 +5,13 @@ namespace HRSystem.Services.DeclaratieService
 {
     public class DeclaratieService : IDeclaratieService
     {
-        private static List<Declaratie> declaraties = new List<Declaratie>
-        {
-            new Declaratie(),
-            new Declaratie{ Id = 1, Naam = "jan Declaratie" }
-        };
+       
+        private readonly DataContext _dataContext;
         private readonly IMapper _mapper;
 
-        public DeclaratieService(IMapper mapper)
+        public DeclaratieService(DataContext dataContext, IMapper mapper)
         {
+            _dataContext = dataContext;
             _mapper = mapper;
         }
 
@@ -21,9 +19,9 @@ namespace HRSystem.Services.DeclaratieService
         {
             var serviceResponse = new ServiceResponse<List<GetDeclaratieDto>>();
             Declaratie declaratie = _mapper.Map<Declaratie>(newDeclaratie);
-            declaratie.Id = declaraties.Max(d => d.Id) + 1;
-            declaraties.Add(declaratie);
-            serviceResponse.Data = declaraties.Select(d => _mapper.Map<GetDeclaratieDto>(d)).ToList();
+            _dataContext.Declaratie.Add(declaratie);
+            _dataContext.SaveChanges();
+            serviceResponse.Data = _dataContext.Declaratie.Select(d => _mapper.Map<GetDeclaratieDto>(d)).ToList();
             return serviceResponse;
         }
 
@@ -33,11 +31,11 @@ namespace HRSystem.Services.DeclaratieService
 
             try
             {
-                Declaratie declaratie = declaraties.First(d => d.Id == id);
-                declaraties.Remove(declaratie);
+                Declaratie declaratie = _dataContext.Declaratie.First(d => d.Id == id);
+                _dataContext.Declaratie.Remove(declaratie);
+                _dataContext.SaveChanges();
 
-
-                serviceResponse.Data = declaraties.Select(d => _mapper.Map<GetDeclaratieDto>(d)).ToList();
+                serviceResponse.Data = _dataContext.Declaratie.Select(d => _mapper.Map<GetDeclaratieDto>(d)).ToList();
             }
             catch (Exception ex)
             {
@@ -52,14 +50,14 @@ namespace HRSystem.Services.DeclaratieService
         {
             return new ServiceResponse<List<GetDeclaratieDto>>
             {
-                Data = declaraties.Select(d => _mapper.Map<GetDeclaratieDto>(d)).ToList()
+                Data = _dataContext.Declaratie.Select(d => _mapper.Map<GetDeclaratieDto>(d)).ToList()
             };
         }
 
         public async Task<ServiceResponse<GetDeclaratieDto>> GetById(int id)
         {
             var serviceResponse = new ServiceResponse<GetDeclaratieDto>();
-            Declaratie declaratie = declaraties.FirstOrDefault(d => d.Id == id);
+            Declaratie declaratie = _dataContext.Declaratie.FirstOrDefault(d => d.Id == id);
             serviceResponse.Data = _mapper.Map<GetDeclaratieDto>(declaratie);
             return serviceResponse;
         }
@@ -70,7 +68,7 @@ namespace HRSystem.Services.DeclaratieService
 
             try
             {
-                Declaratie declaratie = declaraties.FirstOrDefault(d => d.Id == updatedDeclaratie.Id);
+                Declaratie declaratie = _dataContext.Declaratie.FirstOrDefault(d => d.Id == updatedDeclaratie.Id);
 
                 declaratie.Naam = updatedDeclaratie.Naam;
                 declaratie.AanvraagDatum = updatedDeclaratie.AanvraagDatum;
@@ -80,6 +78,8 @@ namespace HRSystem.Services.DeclaratieService
                 declaratie.Bedrag = updatedDeclaratie.Bedrag;
                 declaratie.Btw = updatedDeclaratie.Btw;
                 declaratie.Categorie = updatedDeclaratie.Categorie;
+
+                _dataContext.SaveChanges();
 
                 serviceResponse.Data = _mapper.Map<GetDeclaratieDto>(declaratie);
             }
@@ -98,9 +98,11 @@ namespace HRSystem.Services.DeclaratieService
 
             try
             {
-                Declaratie declaratie = declaraties.FirstOrDefault(d => d.Id == updatedDeclaratie.Id);
+                Declaratie declaratie = _dataContext.Declaratie.FirstOrDefault(d => d.Id == updatedDeclaratie.Id);
 
                 declaratie.GoedKeuring = updatedDeclaratie.GoedKeuring;
+
+                _dataContext.SaveChanges();
 
                 serviceResponse.Data = _mapper.Map<GetDeclaratieDto>(declaratie);
             }

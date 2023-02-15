@@ -5,15 +5,13 @@ namespace HRSystem.Services.VakantieService
 {
     public class VakantieService : IVakantieService
     {
-        private static List<Vakantie> vakanties = new List<Vakantie>()
-        {
-            new Vakantie(),
-            new Vakantie { Id = 1, Naam = "Mei Vakantie"}
-        };
+        
+        private readonly DataContext _dataContext;
         private readonly IMapper _mapper;
 
-        public VakantieService(IMapper mapper)
+        public VakantieService(DataContext dataContext, IMapper mapper)
         {
+            _dataContext = dataContext;
             _mapper = mapper;
         }
 
@@ -21,8 +19,10 @@ namespace HRSystem.Services.VakantieService
         {
             var serviceResponse = new ServiceResponse<List<GetVakantieDto>>();
             Vakantie vakantie = _mapper.Map<Vakantie>(newVakantie);
-            vakantie.Id = vakanties.Max(v => v.Id) + 1;
-            serviceResponse.Data = vakanties.Select(v => _mapper.Map<GetVakantieDto>(v)).ToList();
+            _dataContext.Add(vakantie);
+            _dataContext.SaveChanges();
+
+            serviceResponse.Data = _dataContext.Vakantie.Select(v => _mapper.Map<GetVakantieDto>(v)).ToList();
             return serviceResponse;
         }
 
@@ -32,10 +32,11 @@ namespace HRSystem.Services.VakantieService
 
             try
             {
-                Vakantie vakantie = vakanties.First(v => v.Id == id);
-                vakanties.Remove(vakantie);
+                Vakantie vakantie = _dataContext.Vakantie.First(v => v.Id == id);
+                _dataContext.Vakantie.Remove(vakantie);
+                _dataContext.SaveChanges();
 
-                serviceResponse.Data = vakanties.Select(v => _mapper.Map<GetVakantieDto>(v)).ToList();
+                serviceResponse.Data = _dataContext.Vakantie.Select(v => _mapper.Map<GetVakantieDto>(v)).ToList();
             }
             catch (Exception ex)
             {
@@ -50,26 +51,29 @@ namespace HRSystem.Services.VakantieService
         {
             return new ServiceResponse<List<GetVakantieDto>> 
             { 
-                Data = vakanties.Select(v => _mapper.Map<GetVakantieDto>(v)).ToList()
+                Data = _dataContext.Vakantie.Select(v => _mapper.Map<GetVakantieDto>(v)).ToList()
             };
         }
 
         public async Task<ServiceResponse<GetVakantieDto>> GetVakantieById(int id)
         {
             var serviceResponse = new ServiceResponse<GetVakantieDto>();
-            var vakantie = vakanties.FirstOrDefault(c => c.Id == id);
+            var vakantie = _dataContext.Vakantie.FirstOrDefault(c => c.Id == id);
             serviceResponse.Data = _mapper.Map<GetVakantieDto>(vakantie);
             return serviceResponse;
         }
 
-        public async Task<ServiceResponse<GetVakantieDto>> updateGoedKeruing(UpdateVakantieDto updatedVakantie)
+        public async Task<ServiceResponse<GetVakantieDto>> updateGoedKeuring(UpdateVakantieDto updatedVakantie)
         {
             ServiceResponse<GetVakantieDto> serviceResponse = new ServiceResponse<GetVakantieDto>();
-            Vakantie vakantie = vakanties.FirstOrDefault(v => v.Id == updatedVakantie.Id);
-
+            
             try
             {
+                Vakantie vakantie = _dataContext.Vakantie.FirstOrDefault(v => v.Id == updatedVakantie.Id);
+
                 vakantie.GoedKeuring = updatedVakantie.GoedKeuring;
+
+                _dataContext.SaveChanges();
 
                 serviceResponse.Data = _mapper.Map<GetVakantieDto>(vakantie);
             }
@@ -84,7 +88,7 @@ namespace HRSystem.Services.VakantieService
         public async Task<ServiceResponse<GetVakantieDto>> UpdateVakantie(UpdateVakantieDto updatedVakantie)
         {
             ServiceResponse<GetVakantieDto> serviceResponse = new ServiceResponse<GetVakantieDto>();
-            Vakantie vakantie = vakanties.FirstOrDefault(v => v.Id == updatedVakantie.Id);
+            Vakantie vakantie = _dataContext.Vakantie.FirstOrDefault(v => v.Id == updatedVakantie.Id);
 
             try
             {
@@ -93,6 +97,8 @@ namespace HRSystem.Services.VakantieService
                 vakantie.EindDatum = updatedVakantie.EindDatum;
                 vakantie.AanvraagDatum = updatedVakantie.AanvraagDatum;
                 vakantie.GoedKeuring = updatedVakantie.GoedKeuring;
+
+                _dataContext.SaveChanges();
 
                 serviceResponse.Data = _mapper.Map<GetVakantieDto>(vakantie);
             }

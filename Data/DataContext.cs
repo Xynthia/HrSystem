@@ -9,8 +9,8 @@ namespace HRSystem.Data
 
         }
 
-        public DbSet<User> Users => Set<User>();
-        public DbSet<Declaratie> Declaraties => Set<Declaratie>();
-        public DbSet<Vakantie> Vakanties => Set<Vakantie>();
+        public DbSet<User> User => Set<User>();
+        public DbSet<Declaratie> Declaratie => Set<Declaratie>();
+        public DbSet<Vakantie> Vakantie => Set<Vakantie>();
     }
 }

@@ -6,12 +6,7 @@ namespace HRSystem.Services.UserService
 {
     public class UserService : IUserService
     {
-        private static List<User> users = new List<User>
-        {
-            new User(),
-            new User{ Id = 1, VoorNaam = "Jack", GebruikersNaam = "JackBlack"},
-        };
-
+        
         private readonly IMapper _mapper;
         private readonly DataContext _dataContext;
 
@@ -25,10 +20,10 @@ namespace HRSystem.Services.UserService
         {
             var serviceResponse = new ServiceResponse<List<GetUserDto>>();
             User user = _mapper.Map<User>(newUser);
-            _dataContext.Users.Add(user);
+            _dataContext.User.Add(user);
             _dataContext.SaveChanges();
 
-            serviceResponse.Data = _dataContext.Users.Select(c => _mapper.Map<GetUserDto>(c)).ToList();
+            serviceResponse.Data = _dataContext.User.Select(c => _mapper.Map<GetUserDto>(c)).ToList();
             return serviceResponse;
         }
 
@@ -38,11 +33,11 @@ namespace HRSystem.Services.UserService
 
             try
             {
-                User user = _dataContext.Users.First(u => u.Id == id);
-                _dataContext.Users.Remove(user);
+                User user = _dataContext.User.First(u => u.Id == id);
+                _dataContext.User.Remove(user);
                 _dataContext.SaveChanges();
 
-                serviceResponse.Data = _dataContext.Users.Select(c => _mapper.Map<GetUserDto>(c)).ToList();
+                serviceResponse.Data = _dataContext.User.Select(c => _mapper.Map<GetUserDto>(c)).ToList();
             }
             catch (Exception ex)
             {
@@ -56,14 +51,14 @@ namespace HRSystem.Services.UserService
         public async Task<ServiceResponse<List<GetUserDto>>> getAllUsers()
         {
             return new ServiceResponse<List<GetUserDto>> {
-                Data = _dataContext.Users.Select(c => _mapper.Map<GetUserDto>(c)).ToList()
+                Data = _dataContext.User.Select(c => _mapper.Map<GetUserDto>(c)).ToList()
             };
         }
 
         public async Task<ServiceResponse<GetUserDto>> getUserById(int id)
         {
             var serviceResponse = new ServiceResponse<GetUserDto>();
-            var user = _dataContext.Users.FirstOrDefault(u => u.Id == id);
+            var user = _dataContext.User.FirstOrDefault(u => u.Id == id);
             serviceResponse.Data = _mapper.Map<GetUserDto>(user);
             return serviceResponse;
         }
@@ -72,7 +67,7 @@ namespace HRSystem.Services.UserService
         {
             var serviceResponse = new ServiceResponse<GetUserDto>();
 
-            var user = _dataContext.Users.FirstOrDefault(u => u.GebruikersNaam == request.GebruikersNaam && u.Wachtwoord == request.Wachtwoord);
+            var user = _dataContext.User.FirstOrDefault(u => u.GebruikersNaam == request.GebruikersNaam && u.Wachtwoord == request.Wachtwoord);
                 
             serviceResponse.Data = _mapper.Map<GetUserDto>(user);
 
@@ -85,7 +80,7 @@ namespace HRSystem.Services.UserService
 
             try
             {
-                User user = _dataContext.Users.FirstOrDefault(u => u.Id == updatedUser.Id);
+                User user = _dataContext.User.FirstOrDefault(u => u.Id == updatedUser.Id);
 
                 user.Team = updatedUser.Team;
                 _dataContext.SaveChanges();
@@ -108,7 +103,7 @@ namespace HRSystem.Services.UserService
             try
             {
 
-                User user = _dataContext.Users.FirstOrDefault(u => u.Id == updatedUser.Id);
+                User user = _dataContext.User.FirstOrDefault(u => u.Id == updatedUser.Id);
 
                 //handmatig updates
                 user.GebruikersNaam = updatedUser.GebruikersNaam;
