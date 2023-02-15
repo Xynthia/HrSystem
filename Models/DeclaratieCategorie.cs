@@ -8,6 +8,5 @@ namespace HRSystem.Models
         Uitgave_Declaratie = 1 ,
         Kilometer_Declaratie = 2 ,
         Vaste_Vergoeding = 3,
-
     }
 }

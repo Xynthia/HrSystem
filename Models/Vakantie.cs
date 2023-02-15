@@ -1,4 +1,6 @@
-﻿namespace HRSystem.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace HRSystem.Models
 {
     public class Vakantie
     {
@@ -8,5 +10,8 @@
         public DateTime EindDatum { get; set; } = DateTime.Now;
         public DateTime AanvraagDatum { get; set; } = DateTime.Now;
         public bool GoedKeuring { get; set; } = false;
+
+        [ForeignKey("UserId")]
+        public virtual User User { get; set; }
     }
 }

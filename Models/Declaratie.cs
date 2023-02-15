@@ -1,4 +1,6 @@
-﻿namespace HRSystem.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace HRSystem.Models
 {
     public class Declaratie
     {
@@ -12,6 +14,9 @@
         public int Btw { get; set; } = 21;
 
         public DeclaratieCategorie Categorie { get; set; } 
+        
+        [ForeignKey("UserId")]
+        public virtual User User { get; set; }
 
     }
 }

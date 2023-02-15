@@ -12,9 +12,7 @@ namespace HRSystem.Models
         public string Wachtwoord { get; set; } = "test";
         public string Email { get; set; } = "email";
 
-        public Team? Team { get; set; } 
-        public Rol? Rol { get; set; }
-        public Vakantie? Vakantie { get; set; }
-        public Declaratie? Declaratie { get; set; }
+        public Team Team { get; set; } 
+        public Rol Rol { get; set; }
     }
 }
