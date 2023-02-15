@@ -10,5 +10,7 @@ namespace HRSystem.Data
         }
 
         public DbSet<User> Users => Set<User>();
+        public DbSet<Declaratie> Declaraties => Set<Declaratie>();
+        public DbSet<Vakantie> Vakanties => Set<Vakantie>();
     }
 }

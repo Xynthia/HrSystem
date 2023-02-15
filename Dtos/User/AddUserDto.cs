@@ -1,4 +1,6 @@
-﻿namespace HRSystem.Dtos.User
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace HRSystem.Dtos.User
 {
     public class AddUserDto
     {

@@ -1,7 +1,10 @@
-﻿namespace HRSystem.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace HRSystem.Models
 {
     public class User
     {
+        [Key]
         public int Id { get; set; }
         public string GebruikersNaam { get; set; } = "gebruikersnaam";
         public string VoorNaam { get; set; } = "voornaam";
@@ -9,9 +12,9 @@
         public string Wachtwoord { get; set; } = "test";
         public string Email { get; set; } = "email";
 
-        public Team Team { get; set; } 
-        public Rol Rol { get; set; }
-        public Vakantie Vakantie { get; set; }
-        public Declaratie Declaratie { get; set; }
+        public Team? Team { get; set; } 
+        public Rol? Rol { get; set; }
+        public Vakantie? Vakantie { get; set; }
+        public Declaratie? Declaratie { get; set; }
     }
 }

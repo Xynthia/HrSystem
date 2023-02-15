@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using HRSystem.Dtos.User;
+using Microsoft.EntityFrameworkCore;
 
 namespace HRSystem.Services.UserService
 {
@@ -12,18 +13,22 @@ namespace HRSystem.Services.UserService
         };
 
         private readonly IMapper _mapper;
-        public UserService(IMapper mapper)
+        private readonly DataContext _dataContext;
+
+        public UserService(DataContext dataContext, IMapper mapper)
         {
             _mapper = mapper;
+            _dataContext = dataContext;
         }
 
         public async Task<ServiceResponse<List<GetUserDto>>> AddUser(AddUserDto newUser)
         {
             var serviceResponse = new ServiceResponse<List<GetUserDto>>();
             User user = _mapper.Map<User>(newUser);
-            user.Id = users.Max(u => u.Id) + 1;
-            users.Add(user);
-            serviceResponse.Data = users.Select(c => _mapper.Map<GetUserDto>(c)).ToList();
+            _dataContext.Users.Add(user);
+            _dataContext.SaveChanges();
+
+            serviceResponse.Data = _dataContext.Users.Select(c => _mapper.Map<GetUserDto>(c)).ToList();
             return serviceResponse;
         }
 
@@ -33,9 +38,11 @@ namespace HRSystem.Services.UserService
 
             try
             {
-                User user = users.First(u => u.Id == id);
-                users.Remove(user);
-                serviceResponse.Data = users.Select(c => _mapper.Map<GetUserDto>(c)).ToList();
+                User user = _dataContext.Users.First(u => u.Id == id);
+                _dataContext.Users.Remove(user);
+                _dataContext.SaveChanges();
+
+                serviceResponse.Data = _dataContext.Users.Select(c => _mapper.Map<GetUserDto>(c)).ToList();
             }
             catch (Exception ex)
             {
@@ -48,15 +55,15 @@ namespace HRSystem.Services.UserService
 
         public async Task<ServiceResponse<List<GetUserDto>>> getAllUsers()
         {
-            return new ServiceResponse<List<GetUserDto>> { 
-                Data = users.Select(c => _mapper.Map<GetUserDto>(c)).ToList()
+            return new ServiceResponse<List<GetUserDto>> {
+                Data = _dataContext.Users.Select(c => _mapper.Map<GetUserDto>(c)).ToList()
             };
         }
 
         public async Task<ServiceResponse<GetUserDto>> getUserById(int id)
         {
             var serviceResponse = new ServiceResponse<GetUserDto>();
-            var user = users.FirstOrDefault(u => u.Id == id);
+            var user = _dataContext.Users.FirstOrDefault(u => u.Id == id);
             serviceResponse.Data = _mapper.Map<GetUserDto>(user);
             return serviceResponse;
         }
@@ -65,7 +72,7 @@ namespace HRSystem.Services.UserService
         {
             var serviceResponse = new ServiceResponse<GetUserDto>();
 
-            var user = users.FirstOrDefault(u => u.GebruikersNaam == request.GebruikersNaam && u.Wachtwoord == request.Wachtwoord);
+            var user = _dataContext.Users.FirstOrDefault(u => u.GebruikersNaam == request.GebruikersNaam && u.Wachtwoord == request.Wachtwoord);
                 
             serviceResponse.Data = _mapper.Map<GetUserDto>(user);
 
@@ -78,9 +85,11 @@ namespace HRSystem.Services.UserService
 
             try
             {
-                User user = users.FirstOrDefault(u => u.Id == updatedUser.Id);
+                User user = _dataContext.Users.FirstOrDefault(u => u.Id == updatedUser.Id);
 
                 user.Team = updatedUser.Team;
+                _dataContext.SaveChanges();
+
                 serviceResponse.Data = _mapper.Map<GetUserDto>(user);
             }
             catch (Exception ex)
@@ -98,7 +107,8 @@ namespace HRSystem.Services.UserService
 
             try
             {
-                User user = users.FirstOrDefault(u => u.Id == updatedUser.Id);
+
+                User user = _dataContext.Users.FirstOrDefault(u => u.Id == updatedUser.Id);
 
                 //handmatig updates
                 user.GebruikersNaam = updatedUser.GebruikersNaam;
@@ -106,10 +116,12 @@ namespace HRSystem.Services.UserService
                 user.AchterNaam = updatedUser.AchterNaam;
                 user.Wachtwoord = updatedUser.Wachtwoord;
                 user.Email = updatedUser.Email;
-                /*user.Team = updatedUser.Team;
+                user.Team = updatedUser.Team;
                 user.Rol = updatedUser.Rol;
-                user.Vakantie = updatedUser.Vakantie;
+                /*user.Vakantie = updatedUser.Vakantie;
                 user.Declaratie = updatedUser.Declaratie;*/
+
+                _dataContext.SaveChanges();
 
                 //automatic updates
                 /*_mapper.Map(updatedUser, user);*/
