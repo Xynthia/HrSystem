@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using HRSystem.Dtos.Declaratie;
+using Microsoft.EntityFrameworkCore;
 
 namespace HRSystem.Services.DeclaratieService
 {
@@ -17,11 +18,18 @@ namespace HRSystem.Services.DeclaratieService
 
         public async Task<ServiceResponse<List<GetDeclaratieDto>>> AddDeclaratie(AddDeclaratieDto newDeclaratie)
         {
+            // een nieuwe serviceresponse waarin een lijst van declaratie kan worden opgeslagen
             var serviceResponse = new ServiceResponse<List<GetDeclaratieDto>>();
+            // nieuwe declaratie van
             Declaratie declaratie = _mapper.Map<Declaratie>(newDeclaratie);
-            _dataContext.Declaratie.Add(declaratie);
-            _dataContext.SaveChanges();
-            serviceResponse.Data = _dataContext.Declaratie.Select(d => _mapper.Map<GetDeclaratieDto>(d)).ToList();
+            //toevoegen van declaratie bij database
+            await _dataContext.Declaratie.AddAsync(declaratie);
+            //opslaan van verandering aan database
+            await _dataContext.SaveChangesAsync();
+
+            //data van select toevoegen aan serviceresponse zodat je data van alle declaraties in de lijst kan zien 
+            serviceResponse.Data = await _dataContext.Declaratie.Select(d => _mapper.Map<GetDeclaratieDto>(d)).ToListAsync();
+            //return van serviceresponse
             return serviceResponse;
         }
 
@@ -31,14 +39,19 @@ namespace HRSystem.Services.DeclaratieService
 
             try
             {
-                Declaratie declaratie = _dataContext.Declaratie.First(d => d.Id == id);
+                // zoek de eerste declaratie die een Id heeft gelijk aan de meegegeven id.
+                Declaratie declaratie = await _dataContext.Declaratie.FirstAsync(d => d.Id == id);
+                //remove declaratie van table
                 _dataContext.Declaratie.Remove(declaratie);
-                _dataContext.SaveChanges();
+                // het opslaan van de veranderingen 
+                await _dataContext.SaveChangesAsync();
 
-                serviceResponse.Data = _dataContext.Declaratie.Select(d => _mapper.Map<GetDeclaratieDto>(d)).ToList();
+                //data van select toevoegen aan serviceresponse zodat je data van alle declaraties in de lijst kan zien 
+                serviceResponse.Data = await _dataContext.Declaratie.Select(d => _mapper.Map<GetDeclaratieDto>(d)).ToListAsync();
             }
             catch (Exception ex)
             {
+                // opslaan van succes en message zodat het kan worden laten zien.
                 serviceResponse.Succes = false;
                 serviceResponse.Message = ex.Message;
             }
@@ -48,43 +61,64 @@ namespace HRSystem.Services.DeclaratieService
 
         public async Task<ServiceResponse<List<GetDeclaratieDto>>> GetAll()
         {
+            //een list data van select toevoegen aan serviceresponse zodat je data van alle declaraties in de lijst kan zien 
             return new ServiceResponse<List<GetDeclaratieDto>>
             {
-                Data = _dataContext.Declaratie.Select(d => _mapper.Map<GetDeclaratieDto>(d)).ToList()
+                Data = await _dataContext.Declaratie.Select(d => _mapper.Map<GetDeclaratieDto>(d)).ToListAsync()
             };
+        }
+
+        public async Task<ServiceResponse<List<GetDeclaratieDto>>> GetAllFromUser(int id)
+        {
+            // new list serviceResponse van getDeclaratieDto zodat je de declaratie van een bepaalde user in een lisjt kan zien.
+            var serviceResponse = new ServiceResponse<List<GetDeclaratieDto>>();
+            // een lijst van declaraties waar de user id gelijk is aan de gegeven id.
+            List<Declaratie> declaraties = await _dataContext.Declaratie.Where(d => d.User.Id == id).ToListAsync();
+            // de lijst in service response data zetten.
+            serviceResponse.Data = _mapper.Map<List<GetDeclaratieDto>>(declaraties);
+
+            return serviceResponse;
         }
 
         public async Task<ServiceResponse<GetDeclaratieDto>> GetById(int id)
         {
+            // new serviceResponse van GetDeclaratieDto
             var serviceResponse = new ServiceResponse<GetDeclaratieDto>();
-            Declaratie declaratie = _dataContext.Declaratie.FirstOrDefault(d => d.Id == id);
+            // get declaratie waar declaratie id gelijk is aan input id
+            Declaratie declaratie = await _dataContext.Declaratie.FirstOrDefaultAsync(d => d.Id == id);
+            //declaratie in serviceresponse data zetten.
             serviceResponse.Data = _mapper.Map<GetDeclaratieDto>(declaratie);
             return serviceResponse;
         }
 
-        public async Task<ServiceResponse<GetDeclaratieDto>> UpdateDeclaratie(UpdateDeclaratieDto updatedDeclaratie)
+        public async Task<ServiceResponse<GetDeclaratieDto>> UpdateDeclaratie(int id, UpdateDeclaratieDto updatedDeclaratie)
         {
-            ServiceResponse<GetDeclaratieDto> serviceResponse = new ServiceResponse<GetDeclaratieDto>();
+            // new serviceResponse van GetDeclaratie
+            var serviceResponse = new ServiceResponse<GetDeclaratieDto>();
 
             try
             {
-                Declaratie declaratie = _dataContext.Declaratie.FirstOrDefault(d => d.Id == updatedDeclaratie.Id);
+                //  get declaratie waar waar id gelijk is aan updatedDeclaratie id
+                Declaratie declaratie = await _dataContext.Declaratie.FirstOrDefaultAsync(d => d.Id == updatedDeclaratie.Id && d.Id == id);
 
+                //setting values van prop
                 declaratie.Naam = updatedDeclaratie.Naam;
                 declaratie.AanvraagDatum = updatedDeclaratie.AanvraagDatum;
                 declaratie.Omschrijving = updatedDeclaratie.Omschrijving;
                 declaratie.Documenten = updatedDeclaratie.Documenten;
-                declaratie.GoedKeuring = updatedDeclaratie.GoedKeuring;
                 declaratie.Bedrag = updatedDeclaratie.Bedrag;
                 declaratie.Btw = updatedDeclaratie.Btw;
                 declaratie.Categorie = updatedDeclaratie.Categorie;
 
-                _dataContext.SaveChanges();
+                //save changes to database
+                await _dataContext.SaveChangesAsync();
 
+                //settign service response data met declaratie data
                 serviceResponse.Data = _mapper.Map<GetDeclaratieDto>(declaratie);
             }
             catch (Exception ex)
             {
+                // als iets mis gaat succes failed en extar message voor duidelijkheid van error
                 serviceResponse.Succes = false;
                 serviceResponse.Message = ex.Message;
             }
@@ -92,22 +126,28 @@ namespace HRSystem.Services.DeclaratieService
             return serviceResponse;
         }
 
-        public async Task<ServiceResponse<GetDeclaratieDto>> UpdateGoedKeuring(UpdateDeclaratieDto updatedDeclaratie)
+        public async Task<ServiceResponse<GetDeclaratieDto>> UpdateKeuring(int id, UpdateKeuringDeclaratieDto updatedKeuring)
         {
-            ServiceResponse<GetDeclaratieDto> serviceResponse = new ServiceResponse<GetDeclaratieDto>();
+            // serviceResponse van getDeclaratie
+            var serviceResponse = new ServiceResponse<GetDeclaratieDto>();
 
             try
             {
-                Declaratie declaratie = _dataContext.Declaratie.FirstOrDefault(d => d.Id == updatedDeclaratie.Id);
+                //  get declaratie waar waar id gelijk is aan updatedDeclaratie id
+                Declaratie declaratie = await _dataContext.Declaratie.FirstOrDefaultAsync(d => d.Id == updatedKeuring.Id && d.Id == id);
 
-                declaratie.GoedKeuring = updatedDeclaratie.GoedKeuring;
+                //update goekeuring
+                declaratie.GoedKeuring = updatedKeuring.GoedKeuring;
 
-                _dataContext.SaveChanges();
+                //savechanges to database
+                await _dataContext.SaveChangesAsync();
 
+                // serviceresoonse data heeft declaratie data
                 serviceResponse.Data = _mapper.Map<GetDeclaratieDto>(declaratie);
             }
             catch(Exception ex)
             {
+                // als iets mis gaat succes failed en extar message voor duidelijkheid van error
                 serviceResponse.Succes = false;
                 serviceResponse.Message = ex.Message;
             }

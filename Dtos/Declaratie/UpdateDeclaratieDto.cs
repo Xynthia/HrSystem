@@ -7,7 +7,6 @@
         public DateTime AanvraagDatum { get; set; } = DateTime.Now;
         public string Omschrijving { get; set; } = "omschrijving";
         public string Documenten { get; set; } = "docs";
-        public bool GoedKeuring { get; set; } = false;
         public int Bedrag { get; set; } = 0;
         public int Btw { get; set; } = 21;
 

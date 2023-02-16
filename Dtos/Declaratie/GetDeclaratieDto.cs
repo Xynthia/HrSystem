@@ -12,5 +12,6 @@
         public int Btw { get; set; } = 21;
 
         public DeclaratieCategorie Categorie { get; set; }
+        public int UserId { get; set; }
     }
 }

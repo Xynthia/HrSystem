@@ -16,28 +16,34 @@ namespace HRSystem.Controllers
             _vakantieService = vakantieService;
         }
 
-        [HttpGet("GetAllVakanties")]
+        [HttpGet]
         public async Task<ActionResult<ServiceResponse<List<GetVakantieDto>>>> GetAllVakantie()
         {
-            return Ok(_vakantieService.GetAllVakantie());
+            return Ok(await _vakantieService.GetAllVakantie());
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<ServiceResponse<GetVakantieDto>>> GetSingleVakantie(int id)
         {
-            return Ok(_vakantieService.GetVakantieById(id));
+            return Ok(await _vakantieService.GetVakantieById(id));
+        }
+
+        [HttpGet("user/{id}")]
+        public async Task<ActionResult<ServiceResponse<GetVakantieDto>>> GetAllFromUser(int id)
+        {
+            return Ok(await _vakantieService.GetAllFromUser(id));
         }
 
         [HttpPost]
         public async Task<ActionResult<ServiceResponse<List<GetVakantieDto>>>> AddVakantie(AddVakantieDto newVakantie)
         {
-            return Ok(_vakantieService.AddVakantie(newVakantie));
+            return Ok(await _vakantieService.AddVakantie(newVakantie));
         }
 
         [HttpPut]
-        public async Task<ActionResult<ServiceResponse<GetVakantieDto>>> UpdateVakantie(UpdateVakantieDto updatedVakantie)
+        public async Task<ActionResult<ServiceResponse<GetVakantieDto>>> UpdateVakantie(int id, UpdateVakantieDto updatedVakantie)
         {
-            var serviceResponse = await _vakantieService.UpdateVakantie(updatedVakantie);
+            var serviceResponse = await _vakantieService.UpdateVakantie(id, updatedVakantie);
             if(serviceResponse.Data == null)
             {
                
@@ -46,10 +52,10 @@ namespace HRSystem.Controllers
             return Ok(serviceResponse);
         }
 
-        [HttpPut("GoedKeuring")]
-        public async Task<ActionResult<ServiceResponse<GetVakantieDto>>> UpdateGoedKeuring(UpdateVakantieDto updatedVakantie)
+        [HttpPut("keuring")]
+        public async Task<ActionResult<ServiceResponse<GetVakantieDto>>> UpdateKeuring(int id, UpdateKeuringVakantieDto updatedKeuring)
         {
-            var serviceResponse = await _vakantieService.updateGoedKeuring(updatedVakantie);
+            var serviceResponse = await _vakantieService.UpdateKeuring(id, updatedKeuring);
             if(serviceResponse?.Data == null)
             {
                 return NotFound(serviceResponse);

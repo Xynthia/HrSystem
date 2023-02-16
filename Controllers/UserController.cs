@@ -16,28 +16,28 @@ namespace HRSystem.Controllers
             _userService = userService;
         }
 
-        [HttpGet("GetAllUsers")]
+        [HttpGet]
         public async Task<ActionResult<ServiceResponse<GetUserDto>>> Get()
         {
-            return Ok(_userService.getAllUsers());
+            return Ok(await _userService.getAllUsers());
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<ServiceResponse<GetUserDto>>> GetSingleUser(int id)
         {
-            return Ok(_userService.getUserById(id));
+            return Ok(await _userService.getUserById(id));
         }
 
         [HttpPost]
         public async Task<ActionResult<ServiceResponse<GetUserDto>>> AddUser(AddUserDto newUser)
         {
-            return Ok(_userService.AddUser(newUser));
+            return Ok(await _userService.AddUser(newUser));
         }
 
-        [HttpPut]
-        public async Task<ActionResult<ServiceResponse<List<GetUserDto>>>> UpdateUser(UpdateUserDto updatedUser)
+        [HttpPut("{id}")]
+        public async Task<ActionResult<ServiceResponse<List<GetUserDto>>>> UpdateUser(int id, UpdateUserDto updatedUser)
         {
-            var serviceResponse = await _userService.UpdateUser(updatedUser);
+            var serviceResponse = await _userService.UpdateUser(id, updatedUser);
             if(serviceResponse.Data == null)
             {
                 return NotFound(serviceResponse);
@@ -57,10 +57,10 @@ namespace HRSystem.Controllers
         }
 
 
-        [HttpPut("UpdateTeam")]
-        public async Task<ActionResult<ServiceResponse<List<GetUserDto>>>> UpdateTeam(UpdateUserDto newTeam)
+        [HttpPut("{id}/Team")]
+        public async Task<ActionResult<ServiceResponse<List<GetUserDto>>>> UpdateTeam(int id, UpdateUserDto updatedTeam)
         {
-            var serviceResponse = await _userService.updateTeam(newTeam);
+            var serviceResponse = await _userService.updateTeam(id, updatedTeam);
             if(serviceResponse.Data == null)
             {
                 return NotFound(serviceResponse);

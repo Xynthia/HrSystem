@@ -1,9 +1,11 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace HRSystem.Models
 {
     public class Declaratie
     {
+        [Key]
         public int Id { get; set; }
         public string Naam { get; set; } = "naam";
         public DateTime AanvraagDatum { get; set; } = DateTime.Now;
@@ -16,7 +18,8 @@ namespace HRSystem.Models
         public DeclaratieCategorie Categorie { get; set; } 
         
         [ForeignKey("UserId")]
-        public virtual User User { get; set; }
+        public int UserId { get; set; }
+        public User User { get; set; }
 
     }
 }

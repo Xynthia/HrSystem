@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using HRSystem.Dtos.Vakantie;
+using Microsoft.EntityFrameworkCore;
 
 namespace HRSystem.Services.VakantieService
 {
@@ -19,10 +20,10 @@ namespace HRSystem.Services.VakantieService
         {
             var serviceResponse = new ServiceResponse<List<GetVakantieDto>>();
             Vakantie vakantie = _mapper.Map<Vakantie>(newVakantie);
-            _dataContext.Add(vakantie);
-            _dataContext.SaveChanges();
+            await _dataContext.AddAsync(vakantie);
+            await _dataContext.SaveChangesAsync();
 
-            serviceResponse.Data = _dataContext.Vakantie.Select(v => _mapper.Map<GetVakantieDto>(v)).ToList();
+            serviceResponse.Data = await _dataContext.Vakantie.Select(v => _mapper.Map<GetVakantieDto>(v)).ToListAsync();
             return serviceResponse;
         }
 
@@ -34,9 +35,9 @@ namespace HRSystem.Services.VakantieService
             {
                 Vakantie vakantie = _dataContext.Vakantie.First(v => v.Id == id);
                 _dataContext.Vakantie.Remove(vakantie);
-                _dataContext.SaveChanges();
+                await _dataContext.SaveChangesAsync();
 
-                serviceResponse.Data = _dataContext.Vakantie.Select(v => _mapper.Map<GetVakantieDto>(v)).ToList();
+                serviceResponse.Data = await _dataContext.Vakantie.Select(v => _mapper.Map<GetVakantieDto>(v)).ToListAsync();
             }
             catch (Exception ex)
             {
@@ -47,33 +48,43 @@ namespace HRSystem.Services.VakantieService
             return serviceResponse;
         }
 
+        public async Task<ServiceResponse<List<GetVakantieDto>>> GetAllFromUser(int id)
+        {
+            var serviceResponse = new ServiceResponse<List<GetVakantieDto>>();
+
+            List<Vakantie> vakanties = await _dataContext.Vakantie.Where(v => v.User.Id == id).ToListAsync();
+            serviceResponse.Data = _mapper.Map<List<GetVakantieDto>>(vakanties);
+
+            return serviceResponse;
+        }
+
         public async Task<ServiceResponse<List<GetVakantieDto>>> GetAllVakantie()
         {
             return new ServiceResponse<List<GetVakantieDto>> 
             { 
-                Data = _dataContext.Vakantie.Select(v => _mapper.Map<GetVakantieDto>(v)).ToList()
+                Data = await _dataContext.Vakantie.Select(v => _mapper.Map<GetVakantieDto>(v)).ToListAsync()
             };
         }
 
         public async Task<ServiceResponse<GetVakantieDto>> GetVakantieById(int id)
         {
             var serviceResponse = new ServiceResponse<GetVakantieDto>();
-            var vakantie = _dataContext.Vakantie.FirstOrDefault(c => c.Id == id);
+            var vakantie = await _dataContext.Vakantie.FirstOrDefaultAsync(c => c.Id == id);
             serviceResponse.Data = _mapper.Map<GetVakantieDto>(vakantie);
             return serviceResponse;
         }
 
-        public async Task<ServiceResponse<GetVakantieDto>> updateGoedKeuring(UpdateVakantieDto updatedVakantie)
+        public async Task<ServiceResponse<GetVakantieDto>> UpdateKeuring(int id, UpdateKeuringVakantieDto updatedKeuring)
         {
             ServiceResponse<GetVakantieDto> serviceResponse = new ServiceResponse<GetVakantieDto>();
             
             try
             {
-                Vakantie vakantie = _dataContext.Vakantie.FirstOrDefault(v => v.Id == updatedVakantie.Id);
+                Vakantie vakantie = await _dataContext.Vakantie.FirstOrDefaultAsync(v => v.Id == updatedKeuring.Id && v.Id == id);
 
-                vakantie.GoedKeuring = updatedVakantie.GoedKeuring;
+                vakantie.GoedKeuring = updatedKeuring.GoedKeuring;
 
-                _dataContext.SaveChanges();
+                await _dataContext.SaveChangesAsync();
 
                 serviceResponse.Data = _mapper.Map<GetVakantieDto>(vakantie);
             }
@@ -85,20 +96,20 @@ namespace HRSystem.Services.VakantieService
             return serviceResponse;
         }
 
-        public async Task<ServiceResponse<GetVakantieDto>> UpdateVakantie(UpdateVakantieDto updatedVakantie)
+        public async Task<ServiceResponse<GetVakantieDto>> UpdateVakantie(int id, UpdateVakantieDto updatedVakantie)
         {
             ServiceResponse<GetVakantieDto> serviceResponse = new ServiceResponse<GetVakantieDto>();
-            Vakantie vakantie = _dataContext.Vakantie.FirstOrDefault(v => v.Id == updatedVakantie.Id);
-
+            
             try
             {
+                Vakantie vakantie = await _dataContext.Vakantie.FirstOrDefaultAsync(v => v.Id == updatedVakantie.Id && v.Id == id);
+
                 vakantie.Naam = updatedVakantie.Naam;
                 vakantie.BeginDatum = updatedVakantie.BeginDatum;
                 vakantie.EindDatum = updatedVakantie.EindDatum;
                 vakantie.AanvraagDatum = updatedVakantie.AanvraagDatum;
-                vakantie.GoedKeuring = updatedVakantie.GoedKeuring;
 
-                _dataContext.SaveChanges();
+                await _dataContext.SaveChangesAsync();
 
                 serviceResponse.Data = _mapper.Map<GetVakantieDto>(vakantie);
             }

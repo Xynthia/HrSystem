@@ -20,24 +20,24 @@ namespace HRSystem.Services.UserService
         {
             var serviceResponse = new ServiceResponse<List<GetUserDto>>();
             User user = _mapper.Map<User>(newUser);
-            _dataContext.User.Add(user);
-            _dataContext.SaveChanges();
+            await _dataContext.User.AddAsync(user);
+            await _dataContext.SaveChangesAsync();
 
-            serviceResponse.Data = _dataContext.User.Select(c => _mapper.Map<GetUserDto>(c)).ToList();
+            serviceResponse.Data = await _dataContext.User.Select(c => _mapper.Map<GetUserDto>(c)).ToListAsync();
             return serviceResponse;
         }
 
         public async Task<ServiceResponse<List<GetUserDto>>> DeleteUser(int id)
         {
-            ServiceResponse<List<GetUserDto>> serviceResponse = new ServiceResponse<List<GetUserDto>>();
+            var serviceResponse = new ServiceResponse<List<GetUserDto>>();
 
             try
             {
                 User user = _dataContext.User.First(u => u.Id == id);
                 _dataContext.User.Remove(user);
-                _dataContext.SaveChanges();
+                await _dataContext.SaveChangesAsync();
 
-                serviceResponse.Data = _dataContext.User.Select(c => _mapper.Map<GetUserDto>(c)).ToList();
+                serviceResponse.Data = await _dataContext.User.Select(c => _mapper.Map<GetUserDto>(c)).ToListAsync();
             }
             catch (Exception ex)
             {
@@ -51,14 +51,14 @@ namespace HRSystem.Services.UserService
         public async Task<ServiceResponse<List<GetUserDto>>> getAllUsers()
         {
             return new ServiceResponse<List<GetUserDto>> {
-                Data = _dataContext.User.Select(c => _mapper.Map<GetUserDto>(c)).ToList()
+                Data = await _dataContext.User.Select(c => _mapper.Map<GetUserDto>(c)).ToListAsync()
             };
         }
 
         public async Task<ServiceResponse<GetUserDto>> getUserById(int id)
         {
             var serviceResponse = new ServiceResponse<GetUserDto>();
-            var user = _dataContext.User.FirstOrDefault(u => u.Id == id);
+            var user = await _dataContext.User.FirstOrDefaultAsync(u => u.Id == id);
             serviceResponse.Data = _mapper.Map<GetUserDto>(user);
             return serviceResponse;
         }
@@ -67,23 +67,23 @@ namespace HRSystem.Services.UserService
         {
             var serviceResponse = new ServiceResponse<GetUserDto>();
 
-            var user = _dataContext.User.FirstOrDefault(u => u.GebruikersNaam == request.GebruikersNaam && u.Wachtwoord == request.Wachtwoord);
+            var user = await _dataContext.User.FirstOrDefaultAsync(u => u.GebruikersNaam == request.GebruikersNaam && u.Wachtwoord == request.Wachtwoord);
                 
             serviceResponse.Data = _mapper.Map<GetUserDto>(user);
 
             return serviceResponse;
         }
 
-        public async Task<ServiceResponse<GetUserDto>> updateTeam(UpdateUserDto updatedUser)
+        public async Task<ServiceResponse<GetUserDto>> updateTeam(int id, UpdateUserDto updatedUser)
         {
-            ServiceResponse<GetUserDto> serviceResponse = new ServiceResponse<GetUserDto>();
+            var serviceResponse = new ServiceResponse<GetUserDto>();
 
             try
             {
-                User user = _dataContext.User.FirstOrDefault(u => u.Id == updatedUser.Id);
+                User user = await _dataContext.User.FirstOrDefaultAsync(u => u.Id == updatedUser.Id && u.Id == id);
 
                 user.Team = updatedUser.Team;
-                _dataContext.SaveChanges();
+                await _dataContext.SaveChangesAsync();
 
                 serviceResponse.Data = _mapper.Map<GetUserDto>(user);
             }
@@ -96,14 +96,14 @@ namespace HRSystem.Services.UserService
             return serviceResponse;
         }
 
-        public async Task<ServiceResponse<GetUserDto>> UpdateUser(UpdateUserDto updatedUser)
+        public async Task<ServiceResponse<GetUserDto>> UpdateUser(int id, UpdateUserDto updatedUser)
         {
-            ServiceResponse<GetUserDto> serviceResponse = new ServiceResponse<GetUserDto>();
+            var serviceResponse = new ServiceResponse<GetUserDto>();
 
             try
             {
 
-                User user = _dataContext.User.FirstOrDefault(u => u.Id == updatedUser.Id);
+                User user = await _dataContext.User.FirstOrDefaultAsync(u => u.Id == updatedUser.Id && u.Id == id);
 
                 //handmatig updates
                 user.GebruikersNaam = updatedUser.GebruikersNaam;
@@ -113,10 +113,8 @@ namespace HRSystem.Services.UserService
                 user.Email = updatedUser.Email;
                 user.Team = updatedUser.Team;
                 user.Rol = updatedUser.Rol;
-                /*user.Vakantie = updatedUser.Vakantie;
-                user.Declaratie = updatedUser.Declaratie;*/
 
-                _dataContext.SaveChanges();
+                await _dataContext.SaveChangesAsync();
 
                 //automatic updates
                 /*_mapper.Map(updatedUser, user);*/
