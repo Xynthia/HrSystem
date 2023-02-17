@@ -11,5 +11,6 @@ namespace HRSystem.Services.DeclaratieService
         Task<ServiceResponse<List<GetDeclaratieDto>>> DeleteDeclaratie(int id);
         Task<ServiceResponse<GetDeclaratieDto>> UpdateKeuring(int id, UpdateKeuringDeclaratieDto updatedKeuring);
         Task<ServiceResponse<List<GetDeclaratieDto>>> GetAllFromUser(int id);
+        Task<ServiceResponse<List<GetDeclaratieDto>>> GetAllGoedKeuring();
     }
 }

@@ -34,6 +34,12 @@ namespace HRSystem.Controllers
             return Ok(await _declaratieService.GetAllFromUser(id));
         }
 
+        [HttpGet("keuring/true")]
+        public async Task<ActionResult<ServiceResponse<GetDeclaratieDto>>> GetAllGoedKeuring()
+        {
+            return Ok(await _declaratieService.GetAllGoedKeuring());
+        }
+
         [HttpPost]
         public async Task<ActionResult<ServiceResponse<GetDeclaratieDto>>> AddDeclaratie(AddDeclaratieDto newDeclaratie)
         {

@@ -3,6 +3,6 @@
     public class UpdateKeuringVakantieDto
     {
         public int Id { get; set; }
-        public bool GoedKeuring { get; set; } = false;
+        public bool Keuring { get; set; } = false;
     }
 }

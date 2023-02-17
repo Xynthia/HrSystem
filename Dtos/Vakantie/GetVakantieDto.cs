@@ -7,6 +7,6 @@
         public DateTime BeginDatum { get; set; } = DateTime.Now;
         public DateTime EindDatum { get; set; } = DateTime.Now;
         public DateTime AanvraagDatum { get; set; } = DateTime.Now;
-        public bool GoedKeuring { get; set; } = false;
+        public bool Keuring { get; set; } = false;
     }
 }

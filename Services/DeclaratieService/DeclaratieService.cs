@@ -80,6 +80,18 @@ namespace HRSystem.Services.DeclaratieService
             return serviceResponse;
         }
 
+        public async Task<ServiceResponse<List<GetDeclaratieDto>>> GetAllGoedKeuring()
+        {
+            // new list serviceResponse van getDeclaratieDto zodat je de declaratie van een bepaalde user in een lisjt kan zien.
+            var serviceResponse = new ServiceResponse<List<GetDeclaratieDto>>();
+            // een lijst van declaraties waar de keuring gelijk is aan true
+            List<Declaratie> declaraties = await _dataContext.Declaratie.Where(d => d.Keuring == true).ToListAsync();
+            // de lijst in service response data zetten.
+            serviceResponse.Data = _mapper.Map<List<GetDeclaratieDto>>(declaraties);
+
+            return serviceResponse;
+        }
+
         public async Task<ServiceResponse<GetDeclaratieDto>> GetById(int id)
         {
             // new serviceResponse van GetDeclaratieDto
@@ -137,7 +149,7 @@ namespace HRSystem.Services.DeclaratieService
                 Declaratie declaratie = await _dataContext.Declaratie.FirstOrDefaultAsync(d => d.Id == updatedKeuring.Id && d.Id == id);
 
                 //update goekeuring
-                declaratie.GoedKeuring = updatedKeuring.GoedKeuring;
+                declaratie.Keuring = updatedKeuring.Keuring;
 
                 //savechanges to database
                 await _dataContext.SaveChangesAsync();

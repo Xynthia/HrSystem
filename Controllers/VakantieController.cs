@@ -34,6 +34,12 @@ namespace HRSystem.Controllers
             return Ok(await _vakantieService.GetAllFromUser(id));
         }
 
+        [HttpGet("keuring/true")]
+        public async Task<ActionResult<ServiceResponse<GetVakantieDto>>> GetAllGoedKeuring()
+        {
+            return Ok(await _vakantieService.GetAllGoedKeuring());
+        }
+
         [HttpPost]
         public async Task<ActionResult<ServiceResponse<List<GetVakantieDto>>>> AddVakantie(AddVakantieDto newVakantie)
         {
