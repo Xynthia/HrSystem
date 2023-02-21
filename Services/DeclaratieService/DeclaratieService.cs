@@ -101,15 +101,8 @@ namespace HRSystem.Services.DeclaratieService
                 //  get declaratie waar waar id gelijk is aan updatedDeclaratie id
                 Declaratie declaratie = await _dataContext.Declaratie.FirstOrDefaultAsync(d => d.Id == updatedDeclaratie.Id && d.Id == id);
 
+                // update data
                 declaratie = _mapper.Map<UpdateDeclaratieDto, Declaratie>(updatedDeclaratie, declaratie);
-                //setting values van prop
-                declaratie.Naam = updatedDeclaratie.Naam;
-                declaratie.AanvraagDatum = updatedDeclaratie.AanvraagDatum;
-                declaratie.Omschrijving = updatedDeclaratie.Omschrijving;
-                declaratie.Documenten = updatedDeclaratie.Documenten;
-                declaratie.Bedrag = updatedDeclaratie.Bedrag;
-                declaratie.Btw = updatedDeclaratie.Btw;
-                declaratie.Categorie = updatedDeclaratie.Categorie;
 
                 //save changes to database
                 await _dataContext.SaveChangesAsync();

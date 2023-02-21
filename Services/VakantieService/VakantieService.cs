@@ -131,12 +131,9 @@ namespace HRSystem.Services.VakantieService
                 Vakantie vakantie = await _dataContext.Vakantie.FirstOrDefaultAsync(v => v.Id == updatedVakantie.Id && v.Id == id);
 
                 //update data
-                vakantie.Naam = updatedVakantie.Naam;
-                vakantie.BeginDatum = updatedVakantie.BeginDatum;
-                vakantie.EindDatum = updatedVakantie.EindDatum;
-                vakantie.AanvraagDatum = updatedVakantie.AanvraagDatum;
+                vakantie = _mapper.Map<UpdateVakantieDto, Vakantie>(updatedVakantie, vakantie);
 
-                // dsave change to datacontext.
+                // save change to datacontext.
                 await _dataContext.SaveChangesAsync();
 
                 //map vakantie in data

@@ -150,20 +150,12 @@ namespace HRSystem.Services.UserService
                 //get user waar user id gelijk is aan input.
                 User user = await _dataContext.User.FirstOrDefaultAsync(u => u.Id == updatedUser.Id && u.Id == id);
 
-                //handmatig updates
-                user.GebruikersNaam = updatedUser.GebruikersNaam;
-                user.VoorNaam = updatedUser.VoorNaam;
-                user.AchterNaam = updatedUser.AchterNaam;
-                user.Wachtwoord = updatedUser.Wachtwoord;
-                user.Email = updatedUser.Email;
-                user.Team = updatedUser.Team;
-                user.Rol = updatedUser.Rol;
+                //automatishce updates
+                user = _mapper.Map<UpdateUserDto, User>(updatedUser, user);
 
                 // save changes to datacontext/db
                 await _dataContext.SaveChangesAsync();
 
-                //automatic updates
-                /*_mapper.Map(updatedUser, user);*/
 
                 serviceResponse.Data = _mapper.Map<GetUserDto>(user);
             }
