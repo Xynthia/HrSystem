@@ -28,6 +28,17 @@ namespace HRSystem.Controllers
             return Ok(await _userService.getUserById(id));
         }
 
+        [HttpGet("{id}/declaraties")]
+        public async Task<ActionResult<ServiceResponse<GetUserDto>>> GetDeclaraties(int id)
+        {
+            return Ok(await _userService.getDeclaraties(id));
+        }
+        [HttpGet("{id}/vakanties")]
+        public async Task<ActionResult<ServiceResponse<GetUserDto>>> GetVakanties(int id)
+        {
+            return Ok(await _userService.getVakanties(id));
+        }
+
         [HttpPost]
         public async Task<ActionResult<ServiceResponse<GetUserDto>>> AddUser(AddUserDto newUser)
         {

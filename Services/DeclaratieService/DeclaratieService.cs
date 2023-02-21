@@ -35,7 +35,7 @@ namespace HRSystem.Services.DeclaratieService
 
         public async Task<ServiceResponse<List<GetDeclaratieDto>>> DeleteDeclaratie(int id)
         {
-            ServiceResponse<List<GetDeclaratieDto>> serviceResponse = new ServiceResponse<List<GetDeclaratieDto>>();
+            var serviceResponse = new ServiceResponse<List<GetDeclaratieDto>>();
 
             try
             {
@@ -66,18 +66,6 @@ namespace HRSystem.Services.DeclaratieService
             {
                 Data = await _dataContext.Declaratie.Select(d => _mapper.Map<GetDeclaratieDto>(d)).ToListAsync()
             };
-        }
-
-        public async Task<ServiceResponse<List<GetDeclaratieDto>>> GetAllFromUser(int id)
-        {
-            // new list serviceResponse van getDeclaratieDto zodat je de declaratie van een bepaalde user in een lisjt kan zien.
-            var serviceResponse = new ServiceResponse<List<GetDeclaratieDto>>();
-            // een lijst van declaraties waar de user id gelijk is aan de gegeven id.
-            List<Declaratie> declaraties = await _dataContext.Declaratie.Where(d => d.User.Id == id).ToListAsync();
-            // de lijst in service response data zetten.
-            serviceResponse.Data = _mapper.Map<List<GetDeclaratieDto>>(declaraties);
-
-            return serviceResponse;
         }
 
         public async Task<ServiceResponse<List<GetDeclaratieDto>>> GetAllGoedKeuring()
@@ -113,6 +101,7 @@ namespace HRSystem.Services.DeclaratieService
                 //  get declaratie waar waar id gelijk is aan updatedDeclaratie id
                 Declaratie declaratie = await _dataContext.Declaratie.FirstOrDefaultAsync(d => d.Id == updatedDeclaratie.Id && d.Id == id);
 
+                declaratie = _mapper.Map<UpdateDeclaratieDto, Declaratie>(updatedDeclaratie, declaratie);
                 //setting values van prop
                 declaratie.Naam = updatedDeclaratie.Naam;
                 declaratie.AanvraagDatum = updatedDeclaratie.AanvraagDatum;
@@ -138,7 +127,7 @@ namespace HRSystem.Services.DeclaratieService
             return serviceResponse;
         }
 
-        public async Task<ServiceResponse<GetDeclaratieDto>> UpdateKeuring(int id, UpdateKeuringDeclaratieDto updatedKeuring)
+        public async Task<ServiceResponse<GetDeclaratieDto>> UpdateKeuring(int id, UpdateKeuringDeclaratieDto updatedKeuring, bool keuring)
         {
             // serviceResponse van getDeclaratie
             var serviceResponse = new ServiceResponse<GetDeclaratieDto>();
@@ -149,7 +138,7 @@ namespace HRSystem.Services.DeclaratieService
                 Declaratie declaratie = await _dataContext.Declaratie.FirstOrDefaultAsync(d => d.Id == updatedKeuring.Id && d.Id == id);
 
                 //update goekeuring
-                declaratie.Keuring = updatedKeuring.Keuring;
+                declaratie.Keuring = keuring;
 
                 //savechanges to database
                 await _dataContext.SaveChangesAsync();

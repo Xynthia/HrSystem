@@ -28,13 +28,7 @@ namespace HRSystem.Controllers
             return Ok(await _declaratieService.GetById(id));
         }
 
-        [HttpGet("User/{id}")]
-        public async Task<ActionResult<ServiceResponse<GetDeclaratieDto>>> GetAllDeclaratieFromUser(int id)
-        {
-            return Ok(await _declaratieService.GetAllFromUser(id));
-        }
-
-        [HttpGet("keuring/true")]
+        [HttpGet("goedgekeurd")]
         public async Task<ActionResult<ServiceResponse<GetDeclaratieDto>>> GetAllGoedKeuring()
         {
             return Ok(await _declaratieService.GetAllGoedKeuring());
@@ -68,15 +62,26 @@ namespace HRSystem.Controllers
             return Ok(serviceResponse);
         }
 
-        [HttpPut("keuring")]
-        public async Task<ActionResult<ServiceResponse<GetDeclaratieDto>>> UpdateKeuring(int id, UpdateKeuringDeclaratieDto updatedKeuring)
+        [HttpPut("foutkeuren")]
+        public async Task<ActionResult<ServiceResponse<GetDeclaratieDto>>> DeclaratieFoutKeuren(int id, UpdateKeuringDeclaratieDto updatedKeuring)
         {
-            var serviceResponse = await _declaratieService.UpdateKeuring(id, updatedKeuring);
+            var serviceResponse = await _declaratieService.UpdateKeuring(id, updatedKeuring, false);
             if (serviceResponse.Data == null)
             {
                 return NotFound(serviceResponse);
             }
             return Ok(serviceResponse);    
+        }
+
+        [HttpPut("goedkeuren")]
+        public async Task<ActionResult<ServiceResponse<GetDeclaratieDto>>> DeclaratieGoedKeuren(int id, UpdateKeuringDeclaratieDto updatedKeuring)
+        {
+            var serviceResponse = await _declaratieService.UpdateKeuring(id, updatedKeuring, true);
+            if (serviceResponse.Data == null)
+            {
+                return NotFound(serviceResponse);
+            }
+            return Ok(serviceResponse);
         }
 
 

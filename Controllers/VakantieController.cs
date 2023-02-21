@@ -28,13 +28,7 @@ namespace HRSystem.Controllers
             return Ok(await _vakantieService.GetVakantieById(id));
         }
 
-        [HttpGet("user/{id}")]
-        public async Task<ActionResult<ServiceResponse<GetVakantieDto>>> GetAllFromUser(int id)
-        {
-            return Ok(await _vakantieService.GetAllFromUser(id));
-        }
-
-        [HttpGet("keuring/true")]
+        [HttpGet("goedgekeurd")]
         public async Task<ActionResult<ServiceResponse<GetVakantieDto>>> GetAllGoedKeuring()
         {
             return Ok(await _vakantieService.GetAllGoedKeuring());
@@ -58,11 +52,22 @@ namespace HRSystem.Controllers
             return Ok(serviceResponse);
         }
 
-        [HttpPut("keuring")]
-        public async Task<ActionResult<ServiceResponse<GetVakantieDto>>> UpdateKeuring(int id, UpdateKeuringVakantieDto updatedKeuring)
+        [HttpPut("foutkeuren")]
+        public async Task<ActionResult<ServiceResponse<GetVakantieDto>>> DeclaratieFoutKeuren(int id, UpdateKeuringVakantieDto updatedKeuring)
         {
-            var serviceResponse = await _vakantieService.UpdateKeuring(id, updatedKeuring);
-            if(serviceResponse?.Data == null)
+            var serviceResponse = await _vakantieService.UpdateKeuring(id, updatedKeuring, false);
+            if (serviceResponse.Data == null)
+            {
+                return NotFound(serviceResponse);
+            }
+            return Ok(serviceResponse);
+        }
+
+        [HttpPut("goedkeuren")]
+        public async Task<ActionResult<ServiceResponse<GetVakantieDto>>> DeclaratieGoedKeuren(int id, UpdateKeuringVakantieDto updatedKeuring)
+        {
+            var serviceResponse = await _vakantieService.UpdateKeuring(id, updatedKeuring, true);
+            if (serviceResponse.Data == null)
             {
                 return NotFound(serviceResponse);
             }

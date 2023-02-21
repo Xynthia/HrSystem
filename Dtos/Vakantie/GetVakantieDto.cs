@@ -8,5 +8,6 @@
         public DateTime EindDatum { get; set; } = DateTime.Now;
         public DateTime AanvraagDatum { get; set; } = DateTime.Now;
         public bool Keuring { get; set; } = false;
+        public int UserId { get; set; }
     }
 }

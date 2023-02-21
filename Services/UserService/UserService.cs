@@ -1,5 +1,7 @@
 ﻿using AutoMapper;
+using HRSystem.Dtos.Declaratie;
 using HRSystem.Dtos.User;
+using HRSystem.Dtos.Vakantie;
 using Microsoft.EntityFrameworkCore;
 
 namespace HRSystem.Services.UserService
@@ -68,6 +70,15 @@ namespace HRSystem.Services.UserService
             };
         }
 
+        public async Task<ServiceResponse<List<GetDeclaratieDto>>> getDeclaraties(int id)
+        {
+            var serviceResponse = new ServiceResponse<List<GetDeclaratieDto>>();
+            List<Declaratie> declaraties = await _dataContext.Declaratie.Where(d => d.User.Id == id).ToListAsync();
+            serviceResponse.Data = _mapper.Map<List<GetDeclaratieDto>>(declaraties);
+
+            return serviceResponse;
+        }
+
         public async Task<ServiceResponse<GetUserDto>> getUserById(int id)
         {
             // service response die een getuserdto kan opslaan
@@ -76,6 +87,14 @@ namespace HRSystem.Services.UserService
             //select user in data context
             serviceResponse.Data = _mapper.Map<GetUserDto>(user);
 
+            return serviceResponse;
+        }
+
+        public async Task<ServiceResponse<List<GetVakantieDto>>> getVakanties(int id)
+        {
+            var serviceResponse = new ServiceResponse<List<GetVakantieDto>>();
+            List<Vakantie> vakanties = await _dataContext.Vakantie.Where(d => d.UserId == id).ToListAsync();
+            serviceResponse.Data = _mapper.Map<List<GetVakantieDto>>(vakanties);
             return serviceResponse;
         }
 

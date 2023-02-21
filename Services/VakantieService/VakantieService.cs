@@ -59,19 +59,6 @@ namespace HRSystem.Services.VakantieService
             return serviceResponse;
         }
 
-        public async Task<ServiceResponse<List<GetVakantieDto>>> GetAllFromUser(int id)
-        {
-            // service response die een list van getuserdto kan opslaan
-            var serviceResponse = new ServiceResponse<List<GetVakantieDto>>();
-
-            //get vakanties waar user id gelijk is aan input id.
-            List<Vakantie> vakanties = await _dataContext.Vakantie.Where(v => v.User.Id == id).ToListAsync();
-            // map vakantie to data
-            serviceResponse.Data = _mapper.Map<List<GetVakantieDto>>(vakanties);
-
-            return serviceResponse;
-        }
-
         public async Task<ServiceResponse<List<GetVakantieDto>>> GetAllGoedKeuring()
         {
             // service response die een list van getuserdto kan opslaan
@@ -105,7 +92,7 @@ namespace HRSystem.Services.VakantieService
             return serviceResponse;
         }
 
-        public async Task<ServiceResponse<GetVakantieDto>> UpdateKeuring(int id, UpdateKeuringVakantieDto updatedKeuring)
+        public async Task<ServiceResponse<GetVakantieDto>> UpdateKeuring(int id, UpdateKeuringVakantieDto updatedKeuring, bool keuring)
         {
             // service response die een getuserdto kan opslaan
             var serviceResponse = new ServiceResponse<GetVakantieDto>();
@@ -116,7 +103,7 @@ namespace HRSystem.Services.VakantieService
                 Vakantie vakantie = await _dataContext.Vakantie.FirstOrDefaultAsync(v => v.Id == updatedKeuring.Id && v.Id == id);
 
                 // update keruing
-                vakantie.Keuring = updatedKeuring.Keuring;
+                vakantie.Keuring = keuring;
 
                 // save changes to datacontext
                 await _dataContext.SaveChangesAsync();
