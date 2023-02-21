@@ -22,10 +22,13 @@ namespace HRSystem.Services.UserService
         {
             // service response die een list van getuserdto kan opslaan
             var serviceResponse = new ServiceResponse<List<GetUserDto>>();
+
             // map new user in user
             User user = _mapper.Map<User>(newUser);
+
             //add user to data context
             await _dataContext.User.AddAsync(user);
+
             // save changes to datacontext/db
             await _dataContext.SaveChangesAsync();
 
@@ -43,8 +46,10 @@ namespace HRSystem.Services.UserService
             {
                 // een user ophalen van datacontext waar id gelijk is aan gegeven id.
                 User user = _dataContext.User.First(u => u.Id == id);
+
                 // remove user van datacontext
                 _dataContext.User.Remove(user);
+
                 // save changes to datacontext/db
                 await _dataContext.SaveChangesAsync();
 
@@ -72,8 +77,13 @@ namespace HRSystem.Services.UserService
 
         public async Task<ServiceResponse<List<GetDeclaratieDto>>> getDeclaraties(int id)
         {
+            //service response waar een lijst van declaraties kan krijgen
             var serviceResponse = new ServiceResponse<List<GetDeclaratieDto>>();
+
+            // een lijst van declaraties waar user id gelijk is aan input id.
             List<Declaratie> declaraties = await _dataContext.Declaratie.Where(d => d.User.Id == id).ToListAsync();
+
+            //map declaratie in serviceresponse data
             serviceResponse.Data = _mapper.Map<List<GetDeclaratieDto>>(declaraties);
 
             return serviceResponse;
@@ -83,8 +93,11 @@ namespace HRSystem.Services.UserService
         {
             // service response die een getuserdto kan opslaan
             var serviceResponse = new ServiceResponse<GetUserDto>();
+
+            //get de eerste user van data context waar user id gelijk is aan input id
             var user = await _dataContext.User.FirstOrDefaultAsync(u => u.Id == id);
-            //select user in data context
+
+            //set user in serviceresponse data
             serviceResponse.Data = _mapper.Map<GetUserDto>(user);
 
             return serviceResponse;
@@ -92,8 +105,13 @@ namespace HRSystem.Services.UserService
 
         public async Task<ServiceResponse<List<GetVakantieDto>>> getVakanties(int id)
         {
+            // een serviceresponse die een lijst van vakanties kan krijgen
             var serviceResponse = new ServiceResponse<List<GetVakantieDto>>();
+
+            //een lijst van vakanties waar user id gelijk is aan input id.
             List<Vakantie> vakanties = await _dataContext.Vakantie.Where(d => d.UserId == id).ToListAsync();
+
+            // map vakanties in serviceresponse data.
             serviceResponse.Data = _mapper.Map<List<GetVakantieDto>>(vakanties);
             return serviceResponse;
         }
@@ -114,7 +132,7 @@ namespace HRSystem.Services.UserService
 
         public async Task<ServiceResponse<GetUserDto>> updateTeam(int id, UpdateUserDto updatedUser)
         {
-            // service response die een getuserdto kan opslaan
+            // service response die een getuserdto kan krijgen
             var serviceResponse = new ServiceResponse<GetUserDto>();
 
             try
@@ -127,7 +145,7 @@ namespace HRSystem.Services.UserService
                 // save changes to datacontext/db
                 await _dataContext.SaveChangesAsync();
 
-                // map user to serviceresponse data
+                // map user naar serviceresponse data
                 serviceResponse.Data = _mapper.Map<GetUserDto>(user);
             }
             catch (Exception ex)
@@ -142,7 +160,7 @@ namespace HRSystem.Services.UserService
 
         public async Task<ServiceResponse<GetUserDto>> UpdateUser(int id, UpdateUserDto updatedUser)
         {
-            // service response die ee getuserdto kan opslaan
+            // service response die ee getuserdto kan krijgen
             var serviceResponse = new ServiceResponse<GetUserDto>();
 
             try
@@ -156,7 +174,7 @@ namespace HRSystem.Services.UserService
                 // save changes to datacontext/db
                 await _dataContext.SaveChangesAsync();
 
-
+                //map user in serviceresponse data
                 serviceResponse.Data = _mapper.Map<GetUserDto>(user);
             }
             catch (Exception ex)

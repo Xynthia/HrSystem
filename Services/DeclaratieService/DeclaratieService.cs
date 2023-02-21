@@ -18,17 +18,21 @@ namespace HRSystem.Services.DeclaratieService
 
         public async Task<ServiceResponse<List<GetDeclaratieDto>>> AddDeclaratie(AddDeclaratieDto newDeclaratie)
         {
-            // een nieuwe serviceresponse waarin een lijst van declaratie kan worden opgeslagen
+            // een nieuwe serviceresponse waarin een lijst van declaratie kan krijgen
             var serviceResponse = new ServiceResponse<List<GetDeclaratieDto>>();
-            // nieuwe declaratie van
+
+            // nieuwe new delcaratie in declaratie
             Declaratie declaratie = _mapper.Map<Declaratie>(newDeclaratie);
+
             //toevoegen van declaratie bij database
             await _dataContext.Declaratie.AddAsync(declaratie);
+
             //opslaan van verandering aan database
             await _dataContext.SaveChangesAsync();
 
             //data van select toevoegen aan serviceresponse zodat je data van alle declaraties in de lijst kan zien 
             serviceResponse.Data = await _dataContext.Declaratie.Select(d => _mapper.Map<GetDeclaratieDto>(d)).ToListAsync();
+
             //return van serviceresponse
             return serviceResponse;
         }
@@ -41,8 +45,10 @@ namespace HRSystem.Services.DeclaratieService
             {
                 // zoek de eerste declaratie die een Id heeft gelijk aan de meegegeven id.
                 Declaratie declaratie = await _dataContext.Declaratie.FirstAsync(d => d.Id == id);
+
                 //remove declaratie van table
                 _dataContext.Declaratie.Remove(declaratie);
+
                 // het opslaan van de veranderingen 
                 await _dataContext.SaveChangesAsync();
 
@@ -72,8 +78,10 @@ namespace HRSystem.Services.DeclaratieService
         {
             // new list serviceResponse van getDeclaratieDto zodat je de declaratie van een bepaalde user in een lisjt kan zien.
             var serviceResponse = new ServiceResponse<List<GetDeclaratieDto>>();
+
             // een lijst van declaraties waar de keuring gelijk is aan true
             List<Declaratie> declaraties = await _dataContext.Declaratie.Where(d => d.Keuring == true).ToListAsync();
+
             // de lijst in service response data zetten.
             serviceResponse.Data = _mapper.Map<List<GetDeclaratieDto>>(declaraties);
 
@@ -84,8 +92,10 @@ namespace HRSystem.Services.DeclaratieService
         {
             // new serviceResponse van GetDeclaratieDto
             var serviceResponse = new ServiceResponse<GetDeclaratieDto>();
+
             // get declaratie waar declaratie id gelijk is aan input id
             Declaratie declaratie = await _dataContext.Declaratie.FirstOrDefaultAsync(d => d.Id == id);
+
             //declaratie in serviceresponse data zetten.
             serviceResponse.Data = _mapper.Map<GetDeclaratieDto>(declaratie);
             return serviceResponse;

@@ -18,12 +18,15 @@ namespace HRSystem.Services.VakantieService
 
         public async Task<ServiceResponse<List<GetVakantieDto>>> AddVakantie(AddVakantieDto newVakantie)
         {
-            // service response die een list van getuserdto kan opslaan
+            // service response die een list van getuserdto kan krijgen
             var serviceResponse = new ServiceResponse<List<GetVakantieDto>>();
+
             // map new vakantie in vakantie
             Vakantie vakantie = _mapper.Map<Vakantie>(newVakantie);
+
             // vakantie toevoegen aan data context
             await _dataContext.AddAsync(vakantie);
+
             // save changes datacontext
             await _dataContext.SaveChangesAsync();
 
@@ -41,8 +44,10 @@ namespace HRSystem.Services.VakantieService
             {
                 // get vakantie waar id gelijk is aan input id
                 Vakantie vakantie = _dataContext.Vakantie.First(v => v.Id == id);
+
                 // verwijder vakantie van datacontext
                 _dataContext.Vakantie.Remove(vakantie);
+
                 //SaveChanges changes in datacontext
                 await _dataContext.SaveChangesAsync();
 
@@ -63,8 +68,10 @@ namespace HRSystem.Services.VakantieService
         {
             // service response die een list van getuserdto kan opslaan
             var serviceResponse = new ServiceResponse<List<GetVakantieDto>>();
+
             //get vakantie waar keuring true(goed) is.
             List<Vakantie> vakanties = await _dataContext.Vakantie.Where(v => v.Keuring == true).ToListAsync();
+
             //set vakanties in data
             serviceResponse.Data = _mapper.Map<List<GetVakantieDto>>(vakanties);
 
@@ -85,8 +92,10 @@ namespace HRSystem.Services.VakantieService
         {
             // service response die een getuserdto kan opslaan
             var serviceResponse = new ServiceResponse<GetVakantieDto>();
+
             // get vakantie waar id gelijk is aan input id.
             var vakantie = await _dataContext.Vakantie.FirstOrDefaultAsync(c => c.Id == id);
+
             // map vakantie in data
             serviceResponse.Data = _mapper.Map<GetVakantieDto>(vakantie);
             return serviceResponse;
