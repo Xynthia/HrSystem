@@ -127,7 +127,7 @@ namespace HRSystem.Services.DeclaratieService
             return serviceResponse;
         }
 
-        public async Task<ServiceResponse<GetDeclaratieDto>> UpdateKeuring(int id, UpdateKeuringDeclaratieDto updatedKeuring, bool keuring)
+        public async Task<ServiceResponse<GetDeclaratieDto>> UpdateKeuring(int id, bool keuring)
         {
             // serviceResponse van getDeclaratie
             var serviceResponse = new ServiceResponse<GetDeclaratieDto>();
@@ -135,7 +135,7 @@ namespace HRSystem.Services.DeclaratieService
             try
             {
                 //  get declaratie waar waar id gelijk is aan updatedDeclaratie id
-                Declaratie declaratie = await _dataContext.Declaratie.FirstOrDefaultAsync(d => d.Id == updatedKeuring.Id && d.Id == id);
+                Declaratie declaratie = await _dataContext.Declaratie.FirstOrDefaultAsync(d => d.Id == id);
 
                 //update goekeuring
                 declaratie.Keuring = keuring;
