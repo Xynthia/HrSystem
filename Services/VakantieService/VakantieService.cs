@@ -92,7 +92,7 @@ namespace HRSystem.Services.VakantieService
             return serviceResponse;
         }
 
-        public async Task<ServiceResponse<GetVakantieDto>> UpdateKeuring(int id, UpdateKeuringVakantieDto updatedKeuring, bool keuring)
+        public async Task<ServiceResponse<GetVakantieDto>> UpdateKeuring(int id, bool keuring)
         {
             // service response die een getuserdto kan opslaan
             var serviceResponse = new ServiceResponse<GetVakantieDto>();
@@ -100,7 +100,7 @@ namespace HRSystem.Services.VakantieService
             try
             {
                 // get vakantie waar id gelijk moet zijn aan input id.
-                Vakantie vakantie = await _dataContext.Vakantie.FirstOrDefaultAsync(v => v.Id == updatedKeuring.Id && v.Id == id);
+                Vakantie vakantie = await _dataContext.Vakantie.FirstOrDefaultAsync(v => v.Id == id);
 
                 // update keruing
                 vakantie.Keuring = keuring;

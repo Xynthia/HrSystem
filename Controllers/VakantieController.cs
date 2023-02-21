@@ -53,9 +53,9 @@ namespace HRSystem.Controllers
         }
 
         [HttpPut("foutkeuren")]
-        public async Task<ActionResult<ServiceResponse<GetVakantieDto>>> DeclaratieFoutKeuren(int id, UpdateKeuringVakantieDto updatedKeuring)
+        public async Task<ActionResult<ServiceResponse<GetVakantieDto>>> DeclaratieFoutKeuren(int id)
         {
-            var serviceResponse = await _vakantieService.UpdateKeuring(id, updatedKeuring, false);
+            var serviceResponse = await _vakantieService.UpdateKeuring(id, false);
             if (serviceResponse.Data == null)
             {
                 return NotFound(serviceResponse);
@@ -64,9 +64,9 @@ namespace HRSystem.Controllers
         }
 
         [HttpPut("goedkeuren")]
-        public async Task<ActionResult<ServiceResponse<GetVakantieDto>>> DeclaratieGoedKeuren(int id, UpdateKeuringVakantieDto updatedKeuring)
+        public async Task<ActionResult<ServiceResponse<GetVakantieDto>>> DeclaratieGoedKeuren(int id)
         {
-            var serviceResponse = await _vakantieService.UpdateKeuring(id, updatedKeuring, true);
+            var serviceResponse = await _vakantieService.UpdateKeuring(id, true);
             if (serviceResponse.Data == null)
             {
                 return NotFound(serviceResponse);
